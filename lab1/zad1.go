@@ -6,41 +6,84 @@ import (
 	"math/rand/v2"
 )
 
+
+func in(item int, slice []int) bool {
+	for i:=0; i<len(slice); i++ {
+		if slice[i] == item {
+			return true
+		}
+	}
+	return false
+}
+
+
+func extended_monty_hall(stay_with_choice bool, n int) bool {
+	true_index := rand.IntN(n)
+	choices := make([]bool, n)
+	choices[true_index] = true
+	choice := rand.IntN(n)
+
+	remainer := 0
+	if choice == true_index {
+		candidate := 0
+		for true {
+			candidate = rand.IntN(n)
+			if !(candidate == choice) {
+				break
+			}
+		}
+		remainer = candidate
+	} else {
+		remainer = true_index
+	}
+
+	if !stay_with_choice {
+		choice = remainer
+	}
+
+	return choice == true_index
+}
+
+
 func monty_hall(stay_with_choice bool) bool {
 	true_index := rand.IntN(3)
 	choices := [3]bool{}
-	switch true_index {
-	case 0:
-		choices[0] = true
-	case 1:
-		choices[1] = true
-	case 2:
-		choices[2] = true
-	}
+	choices[true_index] = true
 	choice := rand.IntN(3)
 
-	stop := false
+
 	throwaway := rand.IntN(3)
-	for stop == false {
-		throwaway := rand.IntN(3)
-		if throwaway != choice && choices[throwaway] != true {
-			stop = true
+	for true {
+		throwaway = rand.IntN(3)
+		if throwaway != choice && throwaway != true_index {
+			break
 		}
 	}
 
 	if !stay_with_choice {
-		stop := false
-		for stop == false {
+		for true {
 			new_choice := rand.IntN(3)
 			if new_choice != choice && new_choice != throwaway {
 				choice = new_choice
-				stop = true
+				break
 			}
 		}
 	}
-
 	return choices[choice]
 }
+
+
+func analyse_extended_monty_hall(rounds int, stay_with_choice bool, n int) {
+	wins := 0
+	for i := 0; i < rounds; i++ {
+		game := extended_monty_hall(stay_with_choice, n)
+		if game {
+			wins += 1
+		}
+	}
+	fmt.Println("Attempts:", rounds, "| Successes:", wins, "| Success rate:", math.Round(float64(wins)/float64(rounds)*1000)/10)
+}
+
 
 func analyse_monty_hall(rounds int, stay_with_choice bool) {
 	wins := 0
@@ -53,7 +96,13 @@ func analyse_monty_hall(rounds int, stay_with_choice bool) {
 	fmt.Println("Attempts:", rounds, "| Successes:", wins, "| Success rate:", math.Round(float64(wins)/float64(rounds)*1000)/10)
 }
 
+
+
 func main() {
 	analyse_monty_hall(500, true)
 	analyse_monty_hall(500, false)
+	analyse_extended_monty_hall(500, true, 10)
+	analyse_extended_monty_hall(500, false, 10)
+	analyse_extended_monty_hall(500, true, 100)
+	analyse_extended_monty_hall(500, false, 100)
 }
