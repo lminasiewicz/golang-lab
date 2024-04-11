@@ -5,7 +5,9 @@ import (
 )
 
 func fibonacci(n int) int {
-	if n == 0 || n == 1 {
+	if n == 0 {
+		return 0
+	} else if n == 1 {
 		return 1
 	}
 	prev := 0
@@ -17,6 +19,16 @@ func fibonacci(n int) int {
 		prev = temp
 	}
 	return curr
+}
+
+func fibonacci_rec(n int) int {
+	if n == 0 {
+		return 0
+	} else if n == 1 {
+		return 1
+	} else {
+		return fibonacci_rec(n-1) + fibonacci_rec(n-2)
+	}
 }
 
 func fibonacci_executions(n int) []int {

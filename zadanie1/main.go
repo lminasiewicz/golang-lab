@@ -13,9 +13,12 @@ func main() {
 	}
 
 	strong := calculate_strong_number(codes)
-	weak := calculate_weak_number(strong)
-	fmt.Println(strong)
-	fmt.Println(weak)
+	weak := calculate_weak_number(30)
+	fmt.Println("strong =", strong)
+	fmt.Println("weak =", weak)
+	fmt.Println()
+
+	fmt.Println(predicted_fib_rec_computation_time(strong))
 }
 
-// silna: 509, słaba: 495
+// silna: 509, słaba: 22
