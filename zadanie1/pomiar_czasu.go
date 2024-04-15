@@ -1,10 +1,10 @@
 package main
 
-import(
+import (
 	"fmt"
-	"time"
 	"math"
-	// "math/big"
+	"math/big"
+	"time"
 )
 
 func time_fib(n int, prev time.Duration) time.Duration {
@@ -13,7 +13,7 @@ func time_fib(n int, prev time.Duration) time.Duration {
 	dur := time.Since(start)
 	fmt.Println("Time Elapsed: ", dur)
 	if prev != 0 {
-		fmt.Println("Rate of change: ", float64(dur) / float64(prev))
+		fmt.Println("Rate of change: ", float64(dur)/float64(prev))
 	}
 	return dur
 }
@@ -23,7 +23,8 @@ func float_average(arr []float64) float64 {
 	for i := 1; i < len(arr); i++ {
 		result += arr[i]
 	}
-	result = result / float64(len(arr) - 1)
+	result = result / float64(len(arr)-1)
+	fmt.Println("result", result)
 	return result
 }
 
@@ -34,22 +35,46 @@ func measure_average_fib_rate(lower int, upper int) float64 {
 		start := time.Now()
 		fibonacci_rec(lower + i)
 		dur := time.Since(start)
-		fmt.Println(lower + i, dur)
+		fmt.Println(lower+i, dur)
 		rates[i] = float64(dur) / float64(prev)
+		fmt.Println("prev:", prev, "dur:", dur, "rate:", rates[i])
 		prev = dur
 	}
-	fmt.Println()
 	avg := float_average(rates)
 	fmt.Println("Average rate of elongation of execution time between recursive fibonacci executions with consecutive parameters from", lower, "to", upper, ":\n", avg)
 	return avg
 }
 
-func predicted_fib_rec_computation_time(n int) time.Duration {
+func make_bigfloat_duration_readable(f *big.Float) string {
+	result := big.NewFloat(0)
+	if f.Cmp(big.NewFloat(1000000)) >= 0 {
+		result.Quo(f, big.NewFloat(1000000))
+	} else {
+		return f.Text('f', 2) + " nanoseconds"
+	}
+
+	if result.Cmp(big.NewFloat(0).Quo(big.NewFloat(31556952000), big.NewFloat(12))) >= 0 {
+		result.Quo(result, big.NewFloat(31556952000))
+		return "approximately " + result.Text('f', 2) + " years"
+	}
+	if result.Cmp(big.NewFloat(60000)) >= 0 {
+		result.Quo(result, big.NewFloat(60000))
+		return "approximately " + result.Text('f', 2) + " hours"
+	}
+	if result.Cmp(big.NewFloat(1000)) >= 0 {
+		result.Quo(result, big.NewFloat(1000))
+		return "approximately " + result.Text('f', 2) + " seconds"
+	}
+	return result.Text('f', 2) + " milliseconds"
+}
+
+func predicted_fib_rec_computation_time(n int) string {
 	if n <= 40 {
-		return time_fib(n, 0)
+		return fmt.Sprint("recursive fib(", n, ") will take "+make_bigfloat_duration_readable(big.NewFloat(float64(time_fib(n, 0)))))
 	} else {
 		t := time_fib(40, 0)
-		avg := measure_average_fib_rate(10, 40)
-		return time.Duration(float64(t) * math.Pow(avg, float64(n - 40)))
+		avg := measure_average_fib_rate(27, 40)
+		fmt.Println("avg", avg)
+		return fmt.Sprint("recursive fib(", n, ") will take "+make_bigfloat_duration_readable(big.NewFloat(float64(t)*math.Pow(avg, float64(n-40)))))
 	}
 }

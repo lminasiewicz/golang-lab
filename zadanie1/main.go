@@ -18,7 +18,7 @@ func main() {
 	fmt.Println("weak =", weak)
 	fmt.Println()
 
-	fmt.Println(predicted_fib_rec_computation_time(strong))
+	fmt.Println(predicted_fib_rec_computation_time(46))
 }
 
 // silna: 509, słaba: 22
