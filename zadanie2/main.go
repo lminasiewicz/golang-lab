@@ -1,22 +1,23 @@
 package main
 
 import (
-	"fmt";
-	"math/rand/v2"
+	"fmt"
 	"math"
+	"math/rand/v2"
 )
 
 type Field struct {
-	tree bool
-	age int
+	tree   bool
+	age    int
 	burned bool
 }
 
 // pseudo-enum na kierunki wiatru
 type Direction int
+
 const (
 	None Direction = iota
-	North 
+	North
 	East
 	South
 	West
@@ -30,7 +31,7 @@ func attempt_burn(age int) bool {
 	if age > BURN_RESISTANCE_THRESHOLD {
 		return true
 	} else {
-		var chance float32 = MAX_BURN_RESISTANCE + (float32(age) * float32((1 - MAX_BURN_RESISTANCE) / BURN_RESISTANCE_THRESHOLD))
+		var chance float32 = MAX_BURN_RESISTANCE + (float32(age) * float32((1-MAX_BURN_RESISTANCE)/BURN_RESISTANCE_THRESHOLD))
 		if rand.Float32() < chance {
 			return true
 		}
@@ -84,9 +85,9 @@ func get_coords_around(forest [][]Field, coords [2]int, wind Direction) [][]int 
 	}
 	for i := i_start; i < i_end; i++ {
 		for j := j_start; j < j_end; j++ {
-			if coords[0] + i >= 0 && coords[0] + i < len(forest) && coords[1] + j >= 0 && coords[1] + j < len(forest[0]) {
+			if coords[0]+i >= 0 && coords[0]+i < len(forest) && coords[1]+j >= 0 && coords[1]+j < len(forest[0]) {
 				if !(i == 0 && j == 0) {
-					result = append(result, []int{coords[0]+i, coords[1]+j})
+					result = append(result, []int{coords[0] + i, coords[1] + j})
 				}
 			}
 		}
@@ -137,7 +138,7 @@ func print_forest(forest [][]Field, lightning [2]int) {
 	for row := 0; row < len(forest); row++ {
 		for elem := 0; elem < len(forest[0]); elem++ {
 			fld := forest[row][elem]
-			
+
 			if !fld.tree {
 				if row == lightning[0] && elem == lightning[1] {
 					fmt.Print("★")
@@ -164,7 +165,7 @@ func print_forest_stats(forest [][]Field) {
 	trees := 0
 	burned := 0
 	for row := 0; row < len(forest); row++ {
-		for _, fld := range forest[row] {			
+		for _, fld := range forest[row] {
 			if fld.tree {
 				trees += 1
 				if fld.burned {
@@ -175,8 +176,8 @@ func print_forest_stats(forest [][]Field) {
 	}
 	length := len(forest[0])
 	width := len(forest)
-	forestation := math.Round(10000 * (float64(trees) / float64(length * width))) / 100
-	burned_rate := math.Round(10000 * (float64(burned) / float64(trees))) / 100
+	forestation := math.Round(10000*(float64(trees)/float64(length*width))) / 100
+	burned_rate := math.Round(10000*(float64(burned)/float64(trees))) / 100
 	fmt.Print("Forest ", length, "x", width, " (", length*width, " spaces)\n")
 	fmt.Print("Forestation: ", forestation, "%\n")
 	fmt.Print("Trees: ", trees, "  |  Burned: ", burned, "\n")
@@ -184,6 +185,23 @@ func print_forest_stats(forest [][]Field) {
 	if burned == 0 {
 		fmt.Println("Lightning Strike missed.")
 	}
+}
+
+func get_quality_index(forest [][]Field) float64 {
+	trees := 0
+	burned := 0
+	for row := 0; row < len(forest); row++ {
+		for _, fld := range forest[row] {
+			if fld.tree {
+				trees += 1
+				if fld.burned {
+					burned += 1
+				}
+			}
+		}
+	}
+	burned_rate := math.Round(10000*(float64(burned)/float64(trees))) / 100
+	return float64(trees) * burned_rate
 }
 
 func simulate_once(length int, width int, forestation_rate float32, wind Direction, lightning_is_accurate bool) {
@@ -198,9 +216,26 @@ func simulate_once(length int, width int, forestation_rate float32, wind Directi
 	}
 	print_forest(forest, lightning)
 	print_forest_stats(forest)
-	fmt.Println(lightning)
+}
+
+func simulate_many(sample_size int, length int, width int, forestation_rate float32, wind Direction) float64 {
+	forest := initialize_forest(width, length, forestation_rate)
+
+	var forest_quality_index float64 = 0
+	for i := 0; i < sample_size; i++ {
+		lightning := [2]int{rand.IntN(width), rand.IntN(length)}
+		lightning_strike(forest, lightning, wind)
+		forest_quality_index += get_quality_index(forest)
+	}
+	forest_quality_index = forest_quality_index / float64(sample_size)
+	return forest_quality_index
+}
+
+func conduct_test(sample_size int, length int, width int, wind Direction) {
+
 }
 
 func main() {
-	simulate_once(40, 20, 0.4, None, false)
+	simulate_once(40, 40, 0.5, None, false)
+	conduct_test(100, 40, 40, None)
 }
