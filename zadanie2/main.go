@@ -28,6 +28,8 @@ const BURN_RESISTANCE_THRESHOLD = 400
 const MAX_BURN_RESISTANCE = 0.2
 
 func attempt_burn(age int) bool {
+	// Function, which for a given age of a tree returns a boolean value stating whether or not the attempt to incinerate the tree was successful.
+	// Pseudo-random chance, influenced by a linear function that depends on constants BURN_RESISTANCE_THRESHOLD and MAX_BURN_RESISTANCE.
 	if age > BURN_RESISTANCE_THRESHOLD {
 		return true
 	} else {
@@ -40,6 +42,7 @@ func attempt_burn(age int) bool {
 }
 
 func initialize_forest(width int, length int, rate float32) [][]Field {
+	// Initialize a {width} X {length} field of structs (type Field), the parameter {rate} determines what percentage of these fields will have trees on them.
 	forest := make([][]Field, width)
 	for i := 0; i < width; i++ {
 		forest[i] = make([]Field, length)
@@ -65,6 +68,8 @@ func initialize_forest(width int, length int, rate float32) [][]Field {
 }
 
 func get_coords_around(forest [][]Field, coords [2]int, wind Direction) [][]int {
+	// Helper function to get the coords of all the available fields around a given field.
+	// Pays attention to bounds of the map.
 	result := make([][]int, 0, 11)
 	i_start, j_start := -1, -1
 	i_end, j_end := 2, 2
@@ -96,6 +101,7 @@ func get_coords_around(forest [][]Field, coords [2]int, wind Direction) [][]int 
 }
 
 func burn(forest [][]Field, current [2]int, wind Direction) {
+	// Recursive function to attempt to burn a given {current} tree, and, if successful, execute itself on surrounding fields.
 	available_spaces := get_coords_around(forest, current, wind)
 	next_burners := make([][2]int, 0, 11)
 	for _, space := range available_spaces {
@@ -114,6 +120,7 @@ func burn(forest [][]Field, current [2]int, wind Direction) {
 }
 
 func lightning_strike(forest [][]Field, lightning [2]int, wind Direction) {
+	// Initial lightning strike that starts the wildfire. One-time non-recursive burn().
 	fld := forest[lightning[0]][lightning[1]]
 	if fld.tree && !fld.burned {
 		fld.burned = true
@@ -122,6 +129,8 @@ func lightning_strike(forest [][]Field, lightning [2]int, wind Direction) {
 }
 
 func lightning_strike_until_successful(forest [][]Field, wind Direction) [2]int {
+	// A separate mode for the simulate_once() function, written in cases where the random lightning strike has a low chance to hit a tree.
+	// Ensures that the lightning will strike SOME tree, so you can see the results of the simulation without retrying a lot.
 	lightning := [2]int{rand.IntN(len(forest)), rand.IntN(len(forest[0]))}
 	for {
 		lightning = [2]int{rand.IntN(len(forest)), rand.IntN(len(forest[0]))}
@@ -135,6 +144,9 @@ func lightning_strike_until_successful(forest [][]Field, wind Direction) [2]int 
 }
 
 func print_forest(forest [][]Field, lightning [2]int) {
+	// Prints the forest in a grid with symbols symbolizing different aspects of the simulation.
+	// Empty circles are standing trees. Full circles are burned trees.
+	// Star symbols mean that the lightning struck there. It has a tree and non-tree variant.
 	for row := 0; row < len(forest); row++ {
 		for elem := 0; elem < len(forest[0]); elem++ {
 			fld := forest[row][elem]
@@ -161,7 +173,7 @@ func print_forest(forest [][]Field, lightning [2]int) {
 }
 
 func print_forest_stats(forest [][]Field) {
-	// Funkcja do wypisywania statystyk dot. stanu lasu po trafieniu piorunem
+	// For displaying statistics about the (singular) simulation after the lightning strike and potential subsequent wildfire.
 	trees := 0
 	burned := 0
 	for row := 0; row < len(forest); row++ {
@@ -188,6 +200,9 @@ func print_forest_stats(forest [][]Field) {
 }
 
 func get_quality_index(forest [][]Field) float64 {
+	// A custom index calculated for a forest after its lightning struck. Since a "survival rate" index could easily be meaningless
+	// due to a tiny forestation rate making it unlikely that the lightning strike will hit anything, this index measures how
+	// many trees remain after the lightning strike and its consequences.
 	trees := 0
 	burned := 0
 	for row := 0; row < len(forest); row++ {
@@ -200,11 +215,13 @@ func get_quality_index(forest [][]Field) float64 {
 			}
 		}
 	}
-	burned_rate := math.Round(10000*(float64(burned)/float64(trees))) / 100
-	return float64(trees) * burned_rate
+	burned_rate := float64(burned) / float64(trees)
+	return float64(trees) * (1 - burned_rate)
 }
 
 func simulate_once(length int, width int, forestation_rate float32, wind Direction, lightning_is_accurate bool) {
+	// Run a single simulation and display its end result and statistics. {lightning_is_accurate} parameter lets you guarantee that
+	// the lightning will strike some tree, so you don't have to run it multiple times to get any result where something burned.
 	forest := initialize_forest(width, length, forestation_rate)
 
 	var lightning = [2]int{}
@@ -219,6 +236,7 @@ func simulate_once(length int, width int, forestation_rate float32, wind Directi
 }
 
 func simulate_many(sample_size int, length int, width int, forestation_rate float32, wind Direction) float64 {
+	// Run {sample_size} simulations, and instead of displaying statistics, simply return the average Forest Quality Index of these simulations.
 	forest := initialize_forest(width, length, forestation_rate)
 
 	var forest_quality_index float64 = 0
@@ -231,11 +249,45 @@ func simulate_many(sample_size int, length int, width int, forestation_rate floa
 	return forest_quality_index
 }
 
-func conduct_test(sample_size int, length int, width int, wind Direction) {
+func conduct_test(sample_size int, step float32, length int, width int, wind Direction) {
+	// Run simulate_many() many times with a different {forestation_rate} parameter every time.
+	// the {step} parameter dictates how many times simulate_many() will be run, and with which forestation rates.
+	// {step} = 2 means simulate_many will run with {forestation_rate} of 0, then 0.02, then 0.04, ... , then 1.
+	// {sample_size}, {length}, {width}, and {wind} are for the same things as in simulate_many().
+	step = step / 100
+	var best_score float64 = 0
+	var best_rate float32 = 0
+	var current_score float64 = 0
+	var current_rate float32 = 0
 
+	var rate float32 = 0
+	for ; rate <= 1; rate += step {
+		current_rate = rate
+		current_score = simulate_many(sample_size, length, width, rate, wind)
+		if current_score > best_score {
+			best_rate = current_rate
+			best_score = current_score
+		}
+	}
+	if rate < 1 {
+		current_rate = 1
+		current_score = simulate_many(sample_size, length, width, 1, wind)
+		if current_score > best_score {
+			best_rate = current_rate
+			best_score = current_score
+		}
+	}
+
+	best_rate = float32(math.Round(float64(best_rate*10000)) / 100)
+	fmt.Print("Conducted a series of simulations on the optimal forestation rate of a ", length, "x", width, " forest.\n")
+	fmt.Print("For a step of ", step*100, "% in forestation rate from 0% to 100%, simulations were conducted with a sample size of ", sample_size, " per simulation.\n")
+	if wind != None {
+		fmt.Println("Additionally, wind is blowing to the", wind, "in all of the simulations.")
+	}
+	fmt.Print("Under these conditions, the most optimal forestation rate is ", best_rate, "%, with a Forest Quality Index of ", best_score, ".\n")
 }
 
 func main() {
-	simulate_once(40, 40, 0.5, None, false)
-	conduct_test(100, 40, 40, None)
+	// simulate_once(40, 40, 0.5, None, false)
+	conduct_test(1000, 1, 40, 40, None)
 }
