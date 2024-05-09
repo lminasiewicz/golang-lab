@@ -25,7 +25,7 @@ const (
 
 const MAX_AGE = 600
 const BURN_RESISTANCE_THRESHOLD = 400
-const MAX_BURN_RESISTANCE = 0.2
+const MAX_BURN_RESISTANCE = 0.5
 
 func attempt_burn(age int) bool {
 	// Function, which for a given age of a tree returns a boolean value stating whether or not the attempt to incinerate the tree was successful.
@@ -123,7 +123,7 @@ func lightning_strike(forest [][]Field, lightning [2]int, wind Direction) {
 	// Initial lightning strike that starts the wildfire. One-time non-recursive burn().
 	fld := forest[lightning[0]][lightning[1]]
 	if fld.tree && !fld.burned {
-		fld.burned = true
+		forest[lightning[0]][lightning[1]].burned = true
 		burn(forest, lightning, wind)
 	}
 }
@@ -135,6 +135,7 @@ func lightning_strike_until_successful(forest [][]Field, wind Direction) [2]int 
 	for {
 		lightning = [2]int{rand.IntN(len(forest)), rand.IntN(len(forest[0]))}
 		fld := forest[lightning[0]][lightning[1]]
+		fmt.Println(lightning, fld)
 		if fld.tree && !fld.burned {
 			lightning_strike(forest, lightning, wind)
 			break
@@ -202,7 +203,7 @@ func print_forest_stats(forest [][]Field) {
 func get_quality_index(forest [][]Field) float64 {
 	// A custom index calculated for a forest after its lightning struck. Since a "survival rate" index could easily be meaningless
 	// due to a tiny forestation rate making it unlikely that the lightning strike will hit anything, this index measures how
-	// many trees remain after the lightning strike and its consequences.
+	// many trees remain after the lightning strike and its consequences, weighted slightly with survival rate.
 	trees := 0
 	burned := 0
 	for row := 0; row < len(forest); row++ {
@@ -215,8 +216,28 @@ func get_quality_index(forest [][]Field) float64 {
 			}
 		}
 	}
-	burned_rate := float64(burned) / float64(trees)
-	return float64(trees) * (1 - burned_rate)
+	var survival_rate float64 = float64(1) - (float64(burned) / float64(trees))
+	// modifier is a linear modifier for the result, which weighs it depending on its survival rate.
+	// for any given number of surviving trees, with survival rate of 0% the modifier is 0.8, and with survival rate of 100% the modifier is 1.2.
+	var modifier float64 = float64(0.8) + (survival_rate * float64(0.4))
+	return float64(trees) * survival_rate * modifier
+}
+
+func wind_int_to_name(wind Direction) string {
+	switch wind {
+	case None:
+		return "None"
+	case North:
+		return "North"
+	case East:
+		return "East"
+	case South: 
+		return "South"
+	case West:
+		return "West"
+	default:
+		return "Error"
+	}
 }
 
 func simulate_once(length int, width int, forestation_rate float32, wind Direction, lightning_is_accurate bool) {
@@ -279,15 +300,44 @@ func conduct_test(sample_size int, step float32, length int, width int, wind Dir
 	}
 
 	best_rate = float32(math.Round(float64(best_rate*10000)) / 100)
+	best_score = math.Round(float64(best_score*100)) / 100
 	fmt.Print("Conducted a series of simulations on the optimal forestation rate of a ", length, "x", width, " forest.\n")
 	fmt.Print("For a step of ", step*100, "% in forestation rate from 0% to 100%, simulations were conducted with a sample size of ", sample_size, " per simulation.\n")
 	if wind != None {
-		fmt.Println("Additionally, wind is blowing to the", wind, "in all of the simulations.")
+		fmt.Println("Additionally, wind is blowing to the", wind_int_to_name(wind), "in all of the simulations.")
 	}
 	fmt.Print("Under these conditions, the most optimal forestation rate is ", best_rate, "%, with a Forest Quality Index of ", best_score, ".\n")
 }
 
 func main() {
-	// simulate_once(40, 40, 0.5, None, false)
-	conduct_test(1000, 1, 40, 40, None)
+	// simulate_once(40, 40, 0.2, None, true)
+	conduct_test(100000, 0.5, 80, 20, None)
+	fmt.Println()
+	conduct_test(100000, 0.5, 80, 20, North)
+	fmt.Println()
+	conduct_test(100000, 0.5, 80, 20, South)
+	fmt.Println()
+	conduct_test(100000, 0.5, 80, 20, East)
+	fmt.Println()
+	conduct_test(100000, 0.5, 80, 20, West)
+	fmt.Println()
+	conduct_test(100000, 0.5, 40, 40, None)
+	fmt.Println()
+	conduct_test(100000, 0.5, 40, 40, North)
+	fmt.Println()
+	conduct_test(100000, 0.5, 40, 40, South)
+	fmt.Println()
+	conduct_test(100000, 0.5, 40, 40, East)
+	fmt.Println()
+	conduct_test(100000, 0.5, 40, 40, West)
+	fmt.Println()
+	conduct_test(100000, 0.5, 20, 80, None)
+	fmt.Println()
+	conduct_test(100000, 0.5, 20, 80, North)
+	fmt.Println()
+	conduct_test(100000, 0.5, 20, 80, South)
+	fmt.Println()
+	conduct_test(100000, 0.5, 20, 80, East)
+	fmt.Println()
+	conduct_test(100000, 0.5, 20, 80, West)
 }
