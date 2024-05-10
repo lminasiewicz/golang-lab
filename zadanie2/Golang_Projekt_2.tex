@@ -35,9 +35,9 @@ Modyfikator(StopienPrzetrwania) = 0.8 + 0.4 * StopienPrzetrwania\\
 
 Zamysł FQI jest prosty - ważne jest dla nas przede wszystkim ile zostanie drzew na świecie. Ale zwracamy także uwagę na to, że lepiej jeśli spali się mniej drzew, niż więcej. Stąd w przypadku dwóch wyników z taką samą liczbą pozostałych drzew, wygra ta, w której pożar był mniejszy.\vspace{2ex}\\
 
-Celem eksperymentu jest znalezienie optymalnego zalesienia dla danych parametrów. W tym celu symulację przeprowadzono 100 000 razy dla każdego stopnia zalesienia od 0\% do 100\% z krokiem o 0.5\%. Dla każdej partii 100 000 symulacji wyliczone i porównane zostały średnie wartości FQI. Wyniki eksperymentu przedstawione zostały poniżej.\\
+Celem eksperymentu jest znalezienie optymalnego zalesienia dla danych parametrów. W tym celu symulację przeprowadzono 10 000 razy dla każdego stopnia zalesienia od 0\% do 100\% z krokiem o 0.5\%. Dla każdej partii 10 000 symulacji wyliczone i porównane zostały średnie wartości FQI. Wyniki eksperymentu przedstawione zostały poniżej.\\
 
-
+\newpage
 \section{Wyniki Eksperymentu}
 \subsection{Parametry Testowe}
 Dla eksperymentu przyjęto poniższe parametry:\\
@@ -45,36 +45,36 @@ Dla eksperymentu przyjęto poniższe parametry:\\
   \item Rozmiary Lasu: $20x80$, $40x40$, $80x20$.
   \item Stopień Zalesienia: od $0$\% do $100$\%, z krokiem co $0.5$.\%
   \item Wiatr: 4 strony świata, oraz brak wiatru.
-  \item Wielkość Próby: 100 000.
+  \item Wielkość Próby: 10 000.
 \end{itemize}\\
 
 \subsection{Wyniki}
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|l|l|l|l|}\hline
-Rozmiar & Wiatr & Wielkość Próby & Optymalne Zalesienie & FQI dla Optymalnego Zalesienia \\\hline
- $80x20$ & Brak & $100 000$ & $17$\% & \\\hline
- $80x20$ & Północ & $100 000$ &  & \\\hline
- $80x20$ & Południe & $100 000$ &  & \\\hline
- $80x20$ & Wschód & $100 000$ &  & \\\hline
- $80x20$ & Zachód & $100 000$ &  & \\\hline
- $40x40$ & Brak & $100 000$ &  & \\\hline
- $40x40$ & Północ & $100 000$ &  & \\\hline
- $40x40$ & Południe & $100 000$ &  & \\\hline
- $40x40$ & Wschód & $100 000$ &  & \\\hline
- $40x40$ & Zachód & $100 000$ &  & \\\hline
- $20x80$ & Brak & $100 000$ &  & \\\hline
- $20x80$ & Północ & $100 000$ &  & \\\hline
- $20x80$ & Południe & $100 000$ &  & \\\hline
- $20x80$ & Wschód & $100 000$ &  & \\\hline
- $20x80$ & Zachód & $100 000$ &  & \\\hline
+\begin{tabular}{|l|l|l|l|}\hline
+Rozmiar & Wiatry & Optymalne Zalesienie & FQI \\\hline
+ 80x20 & Brak & $48$\% & $803$\\\hline
+ 80x20 & Północ & $43$\% & $717$\\\hline
+ 80x20 & Południe & $45$\% & $713$ \\\hline
+ 80x20 & Wschód & $44$\% & $640$ \\\hline
+ 80x20 & Zachód & $44$\% & $645$ \\\hline
+ 40x40 & Brak & $45.5$\% & $792$ \\\hline
+ 40x40 & Północ & $41.5$\% & $650$ \\\hline
+ 40x40 & Południe & $41.5$\% & $650$ \\\hline
+ 40x40 & Wschód & $41$\% & $661$ \\\hline
+ 40x40 & Zachód & $38$\% & $647$ \\\hline
+ 20x80 & Brak & $45$\% & $810$ \\\hline
+ 20x80 & Północ & $38$\% & $637$ \\\hline
+ 20x80 & Południe & $43.5$\% & $647$ \\\hline
+ 20x80 & Wschód & $47$\% & $721$ \\\hline
+ 20x80 & Zachód & $44$\% & $695$ \\\hline
 \end{tabular}
 \caption{\label{tab:h1} Optymalne zalesienie i FQI dla różnych parametrów.}
 \end{table}\\
 
 \section{Podsumowanie}
-
+Dokonana została seria razem 3 000 000 symulacji spalania lasu trafionego piorunem. Opracowany został także specjalny indeks do mierzenia jakości lasu, w kontekście jego podatności na spalenie, na podstawie jego ilości drzew przeżywających pożar oraz procentu przezywalności. Na podstawie symulacji, zważając na wymiary lasu, szansę, że piorun trafi w drzewo, wiek drzew, oraz obecność wiatru i jego kierunek, otrzymane zostały różne wyniki dla optymalnego poziomu zalesienia, ale wszystkie z nich znalazły się w granicach 38-48\%.
 \\
 
 \end{document}
