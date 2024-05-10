@@ -1,0 +1,70 @@
+Conducted a series of simulations on the optimal forestation rate of a 80x20 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Under these conditions, the most optimal forestation rate is 48%, with a Forest Quality Index of 802.94.
+
+Conducted a series of simulations on the optimal forestation rate of a 80x20 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Additionally, wind is blowing to the North in all of the simulations.
+Under these conditions, the most optimal forestation rate is 43%, with a Forest Quality Index of 716.76.
+
+Conducted a series of simulations on the optimal forestation rate of a 80x20 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Additionally, wind is blowing to the South in all of the simulations.
+Under these conditions, the most optimal forestation rate is 45%, with a Forest Quality Index of 712.68.
+
+Conducted a series of simulations on the optimal forestation rate of a 80x20 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Additionally, wind is blowing to the East in all of the simulations.
+Under these conditions, the most optimal forestation rate is 44%, with a Forest Quality Index of 640.14.
+
+Conducted a series of simulations on the optimal forestation rate of a 80x20 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Additionally, wind is blowing to the West in all of the simulations.
+Under these conditions, the most optimal forestation rate is 44%, with a Forest Quality Index of 645.01.
+
+Conducted a series of simulations on the optimal forestation rate of a 40x40 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Under these conditions, the most optimal forestation rate is 45.5%, with a Forest Quality Index of 792.49.
+
+Conducted a series of simulations on the optimal forestation rate of a 40x40 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Additionally, wind is blowing to the North in all of the simulations.
+Under these conditions, the most optimal forestation rate is 41.5%, with a Forest Quality Index of 650.03.
+
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Additionally, wind is blowing to the South in all of the simulations.
+Under these conditions, the most optimal forestation rate is 41.5%, with a Forest Quality Index of 649.7.
+
+Conducted a series of simulations on the optimal forestation rate of a 40x40 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Additionally, wind is blowing to the East in all of the simulations.
+Under these conditions, the most optimal forestation rate is 41%, with a Forest Quality Index of 661.28.
+
+Conducted a series of simulations on the optimal forestation rate of a 40x40 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Additionally, wind is blowing to the West in all of the simulations.
+Under these conditions, the most optimal forestation rate is 38%, with a Forest Quality Index of 646.53.
+
+Conducted a series of simulations on the optimal forestation rate of a 20x80 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Under these conditions, the most optimal forestation rate is 45%, with a Forest Quality Index of 810.35.
+
+Conducted a series of simulations on the optimal forestation rate of a 20x80 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Additionally, wind is blowing to the North in all of the simulations.
+Under these conditions, the most optimal forestation rate is 38%, with a Forest Quality Index of 637.23.
+
+Conducted a series of simulations on the optimal forestation rate of a 20x80 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Additionally, wind is blowing to the South in all of the simulations.
+Under these conditions, the most optimal forestation rate is 43.5%, with a Forest Quality Index of 646.99.
+
+Conducted a series of simulations on the optimal forestation rate of a 20x80 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Additionally, wind is blowing to the East in all of the simulations.
+Under these conditions, the most optimal forestation rate is 47%, with a Forest Quality Index of 720.52.
+
+Conducted a series of simulations on the optimal forestation rate of a 20x80 forest.
+For a step of 0.5% in forestation rate from 0% to 100%, simulations were conducted with a sample size of 10000 per simulation.
+Additionally, wind is blowing to the West in all of the simulations.
+Under these conditions, the most optimal forestation rate is 44%, with a Forest Quality Index of 695.42.

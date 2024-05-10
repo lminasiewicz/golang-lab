@@ -220,7 +220,7 @@ func get_quality_index(forest [][]Field) float64 {
 	// modifier is a linear modifier for the result, which weighs it depending on its survival rate.
 	// for any given number of surviving trees, with survival rate of 0% the modifier is 0.8, and with survival rate of 100% the modifier is 1.2.
 	var modifier float64 = float64(0.8) + (survival_rate * float64(0.4))
-	return float64(trees) * survival_rate * modifier
+	return float64(trees-burned) * modifier
 }
 
 func wind_int_to_name(wind Direction) string {
@@ -231,13 +231,29 @@ func wind_int_to_name(wind Direction) string {
 		return "North"
 	case East:
 		return "East"
-	case South: 
+	case South:
 		return "South"
 	case West:
 		return "West"
 	default:
 		return "Error"
 	}
+}
+
+func copy_forest(forest [][]Field) [][]Field {
+	result := make([][]Field, len(forest))
+	for i, row := range forest {
+		new_row := make([]Field, len(forest[0]))
+		for j, elem := range row {
+			var f Field
+			f.tree = elem.tree
+			f.age = elem.age
+			f.burned = elem.burned
+			new_row[j] = f
+		}
+		result[i] = new_row
+	}
+	return result
 }
 
 func simulate_once(length int, width int, forestation_rate float32, wind Direction, lightning_is_accurate bool) {
@@ -262,9 +278,11 @@ func simulate_many(sample_size int, length int, width int, forestation_rate floa
 
 	var forest_quality_index float64 = 0
 	for i := 0; i < sample_size; i++ {
+		forest_temp := copy_forest(forest)
 		lightning := [2]int{rand.IntN(width), rand.IntN(length)}
-		lightning_strike(forest, lightning, wind)
-		forest_quality_index += get_quality_index(forest)
+		lightning_strike(forest_temp, lightning, wind)
+		forest_quality_index += get_quality_index(forest_temp)
+		// fmt.Println(get_quality_index(forest_temp))
 	}
 	forest_quality_index = forest_quality_index / float64(sample_size)
 	return forest_quality_index
@@ -281,7 +299,7 @@ func conduct_test(sample_size int, step float32, length int, width int, wind Dir
 	var current_score float64 = 0
 	var current_rate float32 = 0
 
-	var rate float32 = 0
+	var rate float32 = 0.2
 	for ; rate <= 1; rate += step {
 		current_rate = rate
 		current_score = simulate_many(sample_size, length, width, rate, wind)
@@ -310,34 +328,34 @@ func conduct_test(sample_size int, step float32, length int, width int, wind Dir
 }
 
 func main() {
-	// simulate_once(40, 40, 0.2, None, true)
-	conduct_test(100000, 0.5, 80, 20, None)
+	// simulate_once(40, 40, 0.05, None, true)
+	conduct_test(10000, 0.5, 80, 20, None)
 	fmt.Println()
-	conduct_test(100000, 0.5, 80, 20, North)
+	conduct_test(10000, 0.5, 80, 20, North)
 	fmt.Println()
-	conduct_test(100000, 0.5, 80, 20, South)
+	conduct_test(10000, 0.5, 80, 20, South)
 	fmt.Println()
-	conduct_test(100000, 0.5, 80, 20, East)
+	conduct_test(10000, 0.5, 80, 20, East)
 	fmt.Println()
-	conduct_test(100000, 0.5, 80, 20, West)
+	conduct_test(10000, 0.5, 80, 20, West)
 	fmt.Println()
-	conduct_test(100000, 0.5, 40, 40, None)
+	conduct_test(10000, 0.5, 40, 40, None)
 	fmt.Println()
-	conduct_test(100000, 0.5, 40, 40, North)
+	conduct_test(10000, 0.5, 40, 40, North)
 	fmt.Println()
-	conduct_test(100000, 0.5, 40, 40, South)
+	conduct_test(10000, 0.5, 40, 40, South)
 	fmt.Println()
-	conduct_test(100000, 0.5, 40, 40, East)
+	conduct_test(10000, 0.5, 40, 40, East)
 	fmt.Println()
-	conduct_test(100000, 0.5, 40, 40, West)
+	conduct_test(10000, 0.5, 40, 40, West)
 	fmt.Println()
-	conduct_test(100000, 0.5, 20, 80, None)
+	conduct_test(10000, 0.5, 20, 80, None)
 	fmt.Println()
-	conduct_test(100000, 0.5, 20, 80, North)
+	conduct_test(10000, 0.5, 20, 80, North)
 	fmt.Println()
-	conduct_test(100000, 0.5, 20, 80, South)
+	conduct_test(10000, 0.5, 20, 80, South)
 	fmt.Println()
-	conduct_test(100000, 0.5, 20, 80, East)
+	conduct_test(10000, 0.5, 20, 80, East)
 	fmt.Println()
-	conduct_test(100000, 0.5, 20, 80, West)
+	conduct_test(10000, 0.5, 20, 80, West)
 }
