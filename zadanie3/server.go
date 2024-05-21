@@ -6,7 +6,8 @@ import (
 	"os";
 	"io";
 	"encoding/json",
-	"sync"
+	"sync",
+	"math/rand"
 )
 
 
@@ -32,7 +33,7 @@ func get_db() []Entry {
 	jsonFile, err := os.Open("global-shark-attack.json")
     if err != nil {
         fmt.Println(err)
-    }fmt.Println(get_db())
+    }
 
     var jsonList []Data
     json.Unmarshal(byteValue, &jsonList)
@@ -50,7 +51,35 @@ func get_db() []Entry {
 
 func entriesHandler (w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
+		mutex.Lock()
+		defer mutex.Unlock()
 
+		db := get_db()
+		len_db := len(db)
+		random_post_ids := [10]int{}
+		for i := 0; i < len(random_post_ids), i++ {
+			for {
+				unique := true
+				index := rand.Intn(len_db-1)
+				for _, elem := range random_post_ids {
+					if index == elem {
+						unique = false
+						break
+					}
+				}
+				if unique == true {
+					random_post_ids[i] = index
+					break
+				}
+			}
+		}
+
+		random_posts := make([]Entry, 10)
+		for i := 0; i < len(random_posts); i++ {
+			random_posts[i] = db[random_post_ids[i]]
+		}
+		w.Header().Set("Content-type", "application/json")
+		json.NewEncoder(w).Encode(random_posts)
 	}
 	else {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -60,7 +89,7 @@ func entriesHandler (w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Get database from file
-	db = get_db()
+	db := get_db()
 
 	http.HandleFunc("/entries", entriesHandler)
 	http.ListenAndserve(":8080", nil)
