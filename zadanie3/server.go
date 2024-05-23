@@ -7,11 +7,13 @@ import (
 	"io";
 	"encoding/json";
 	"sync";
-	"math/rand"
+	"math/rand";
+	"strconv"
 )
 
 
 var mutex sync.Mutex
+var db []Entry = choose_random_ten(get_db())
 
 
 type Entry struct {
@@ -79,23 +81,123 @@ func choose_random_ten(db []Entry) []Entry {
 }
 
 
-func entriesHandler (w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
+func remove_from_db(idx int) bool {
+	if idx == -1 {
+		return false
+	}
+    db[idx] = db[len(db)-1]
+    db = db[:len(db)-1]
+	return true
+}
+
+
+func find_entry(id int) int {
+	for index, entry := range db {
+		if entry.Id == id {
+			return index
+		}
+	}
+	return -1
+}
+
+func get_next_id() int {
+	current := -1
+	for _, entry := range db {
+		if entry.Id > current {
+			current = entry.Id
+		}
+	}
+	return current + 1
+}
+
+
+func post_entry_handler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		var data Data
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Error reading request body", http.StatusInternalServerError)
+			return
+		}
+		if err := json.Unmarshal(body, &data); err != nil {
+			http.Error(w, "Error parsing request body", http.StatusBadRequest)
+			return
+		}
+
 		mutex.Lock()
 		defer mutex.Unlock()
 
+		id := get_next_id()
+		var entry Entry
+		entry.Id = id
+		entry.Data = data
+
+		db = append(db, entry)
+
 		w.Header().Set("Content-type", "application/json")
-		json.NewEncoder(w).Encode(random_posts)
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(entry)
+
 	} else {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
 
-func main() {
-	db := choose_random_ten(get_db())
+func entries_handler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		mutex.Lock()
+		defer mutex.Unlock()
 
-	http.HandleFunc("/entries", entriesHandler)
+		w.Header().Set("Content-type", "application/json")
+		json.NewEncoder(w).Encode(db)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+
+func entry_handler(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Path[len("/entries/"):])
+	if err != nil {
+		http.Error(w, "Invalid post ID", http.StatusBadRequest)
+		return
+	}
+
+	switch r.Method {
+	case "GET":
+		mutex.Lock()
+		defer mutex.Unlock()
+
+		var idx int = find_entry(id)
+		if idx == -1 {
+			http.Error(w, "Post not found", http.StatusBadRequest)
+		} else {
+			w.Header().Set("Content-type", "application/json")
+			json.NewEncoder(w).Encode(db[idx])
+		}
+
+	case "DELETE":
+		mutex.Lock()
+		defer mutex.Unlock()
+
+		idx := find_entry(id)
+		if remove_from_db(idx) == false {
+			http.Error(w, "Post not found", http.StatusBadRequest)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
+
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+
+func main() {
+	http.HandleFunc("/entries", entries_handler)
+	http.HandleFunc("/entries/", entry_handler)
+	http.HandleFunc("/entries/submit", post_entry_handler)
 
 	fmt.Println("Server is running at http://localhost:8080")
 	http.ListenAndServe(":8080", nil)

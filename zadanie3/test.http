@@ -1,1 +1,22 @@
 GET http://localhost:8080/entries
+
+###
+
+GET http://localhost:8080/entries/2933
+
+###
+
+POST http://localhost:8080/entries/submit
+
+{
+    "Year": "2024",
+    "Type": "Provoked",
+    "Country": "Poland",
+    "Activity": "Gambling",
+    "Sex": "M",
+    "Fatal_y_n": "N"
+}
+
+###
+
+DELETE http://localhost:8080/entries/2933
